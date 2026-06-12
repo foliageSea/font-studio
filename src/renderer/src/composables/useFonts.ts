@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, type Ref, type ComputedRef } from 'vue'
 import type { FontInfo, FilterType } from '../types/font'
 
 const fonts = ref<FontInfo[]>([])
@@ -6,10 +6,36 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const searchQuery = ref('')
 const filter = ref<FilterType>('all')
+const fontFamily = ref('')
 const selectedFont = ref<FontInfo | null>(null)
 const previewText = ref('The quick brown fox jumps over the lazy dog')
 
-export function useFonts() {
+export function useFonts(): {
+  fonts: Ref<FontInfo[]>
+  loading: Ref<boolean>
+  error: Ref<string | null>
+  searchQuery: Ref<string>
+  filter: Ref<FilterType>
+  fontFamily: Ref<string>
+  selectedFont: Ref<FontInfo | null>
+  previewText: Ref<string>
+  filteredFonts: ComputedRef<FontInfo[]>
+  fontFamilyList: ComputedRef<string[]>
+  fontStats: ComputedRef<{
+    total: number
+    installed: number
+    recent: number
+  }>
+  scanFonts: () => Promise<void>
+  installFont: (filePath: string) => Promise<{ success: boolean; message: string; font?: FontInfo }>
+  uninstallFont: (font: FontInfo) => Promise<{ success: boolean; message: string }>
+  importFonts: () => Promise<{ success: boolean; message: string; font?: FontInfo }[]>
+  selectFont: (font: FontInfo | null) => void
+  setSearchQuery: (query: string) => void
+  setFilter: (newFilter: FilterType) => void
+  setFontFamily: (family: string) => void
+  setPreviewText: (text: string) => void
+} {
   const filteredFonts = computed(() => {
     let result = fonts.value
 
@@ -17,22 +43,33 @@ export function useFonts() {
       const query = searchQuery.value.toLowerCase()
       result = result.filter(
         (font) =>
-          font.name.toLowerCase().includes(query) ||
-          font.family.toLowerCase().includes(query)
+          font.name.toLowerCase().includes(query) || font.family.toLowerCase().includes(query)
       )
+    }
+
+    if (fontFamily.value) {
+      result = result.filter((font) => font.family === fontFamily.value)
     }
 
     if (filter.value === 'installed') {
       result = result.filter((font) => font.installed)
     } else if (filter.value === 'recent') {
-      const thirtyDaysAgo = new Date()
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+      const thirtyDaysAago = new Date()
+      thirtyDaysAago.setDate(thirtyDaysAago.getDate() - 30)
       result = result.filter(
-        (font) => font.installedDate && new Date(font.installedDate) > thirtyDaysAgo
+        (font) => font.installedDate && new Date(font.installedDate) > thirtyDaysAago
       )
     }
 
     return result
+  })
+
+  const fontFamilyList = computed(() => {
+    const families = new Set<string>()
+    fonts.value.forEach((font) => {
+      families.add(font.family)
+    })
+    return Array.from(families).sort()
   })
 
   const fontStats = computed(() => ({
@@ -46,7 +83,7 @@ export function useFonts() {
     }).length
   }))
 
-  async function scanFonts() {
+  async function scanFonts(): Promise<void> {
     loading.value = true
     error.value = null
     try {
@@ -58,7 +95,9 @@ export function useFonts() {
     }
   }
 
-  async function installFont(filePath: string) {
+  async function installFont(
+    filePath: string
+  ): Promise<{ success: boolean; message: string; font?: import('../types/font').FontInfo }> {
     loading.value = true
     error.value = null
     try {
@@ -75,7 +114,7 @@ export function useFonts() {
     }
   }
 
-  async function uninstallFont(font: FontInfo) {
+  async function uninstallFont(font: FontInfo): Promise<{ success: boolean; message: string }> {
     loading.value = true
     error.value = null
     try {
@@ -95,9 +134,9 @@ export function useFonts() {
     }
   }
 
-  async function importFonts() {
+  async function importFonts(): Promise<{ success: boolean; message: string; font?: FontInfo }[]> {
     const result = await window.api.openFileDialog()
-    if (result.canceled) return
+    if (result.canceled) return []
 
     const results: { success: boolean; message: string; font?: FontInfo }[] = []
     for (const filePath of result.files) {
@@ -109,19 +148,23 @@ export function useFonts() {
     return results
   }
 
-  function selectFont(font: FontInfo | null) {
+  function selectFont(font: FontInfo | null): void {
     selectedFont.value = font
   }
 
-  function setSearchQuery(query: string) {
+  function setSearchQuery(query: string): void {
     searchQuery.value = query
   }
 
-  function setFilter(newFilter: FilterType) {
+  function setFilter(newFilter: FilterType): void {
     filter.value = newFilter
   }
 
-  function setPreviewText(text: string) {
+  function setFontFamily(family: string): void {
+    fontFamily.value = family
+  }
+
+  function setPreviewText(text: string): void {
     previewText.value = text
   }
 
@@ -131,9 +174,11 @@ export function useFonts() {
     error,
     searchQuery,
     filter,
+    fontFamily,
     selectedFont,
     previewText,
     filteredFonts,
+    fontFamilyList,
     fontStats,
     scanFonts,
     installFont,
@@ -142,6 +187,7 @@ export function useFonts() {
     selectFont,
     setSearchQuery,
     setFilter,
+    setFontFamily,
     setPreviewText
   }
 }

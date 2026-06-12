@@ -17,12 +17,14 @@ const {
   selectedFont,
   previewText,
   filteredFonts,
+  fontFamilyList,
   fontStats,
   scanFonts,
   installFont,
   uninstallFont,
   importFonts,
   selectFont,
+  setFontFamily,
   setPreviewText
 } = useFonts()
 
@@ -30,23 +32,23 @@ onMounted(() => {
   scanFonts()
 })
 
-function handleSelect(font: FontInfo) {
+function handleSelect(font: FontInfo): void {
   selectFont(font)
 }
 
-async function handleInstall(font: FontInfo) {
+async function handleInstall(font: FontInfo): Promise<void> {
   await installFont(font.filePath)
 }
 
-async function handleUninstall(font: FontInfo) {
+async function handleUninstall(font: FontInfo): Promise<void> {
   await uninstallFont(font)
 }
 
-function handleClosePreview() {
+function handleClosePreview(): void {
   selectFont(null)
 }
 
-async function handleImport() {
+async function handleImport(): Promise<void> {
   await importFonts()
 }
 </script>
@@ -63,10 +65,20 @@ async function handleImport() {
         </div>
         <div class="header-right">
           <SearchBar v-model="searchQuery" />
-          <FilterBar v-model="filter" :stats="fontStats" />
+          <FilterBar
+            v-model="filter"
+            :stats="fontStats"
+            :font-family-list="fontFamilyList"
+            @update:font-family="setFontFamily"
+          />
           <button class="btn btn-primary" @click="handleImport">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path
+                d="M8 3V13M3 8H13"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
             </svg>
             导入字体
           </button>

@@ -13,17 +13,17 @@ const emit = defineEmits<{
   <div class="empty-state">
     <div class="empty-state-icon">
       <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-        <rect x="8" y="12" width="48" height="40" rx="4" stroke="currentColor" stroke-width="2"/>
-        <path d="M20 28H44" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <path d="M20 36H36" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        <path d="M20 44H28" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <rect x="8" y="12" width="48" height="40" rx="4" stroke="currentColor" stroke-width="2" />
+        <path d="M20 28H44" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        <path d="M20 36H36" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        <path d="M20 44H28" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
     </div>
     <h3 class="empty-state-title">{{ title || '没有找到字体' }}</h3>
     <p class="empty-state-description">{{ description || '尝试调整搜索条件或导入新字体' }}</p>
     <button class="btn btn-primary" @click="emit('action')">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
       </svg>
       导入字体
     </button>

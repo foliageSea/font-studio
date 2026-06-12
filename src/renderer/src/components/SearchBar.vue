@@ -23,23 +23,18 @@ function clear() {
 <template>
   <div class="search-bar">
     <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/>
-      <path d="M11 11L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5" />
+      <path d="M11 11L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
     </svg>
-    <input
-      v-model="value"
-      type="text"
-      class="input"
-      :placeholder="placeholder || '搜索字体...'"
-    />
-    <button
-      v-if="value"
-      class="clear-btn"
-      @click="clear"
-      title="清除"
-    >
+    <input v-model="value" type="text" class="input" :placeholder="placeholder || '搜索字体...'" />
+    <button v-if="value" class="clear-btn" @click="clear" title="清除">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path d="M3 3L11 11M11 3L3 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path
+          d="M3 3L11 11M11 3L3 11"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
       </svg>
     </button>
   </div>
