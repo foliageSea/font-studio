@@ -1,0 +1,112 @@
+@import './variables.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--font-body-size-md);
+  line-height: 1.55;
+  color: var(--color-body);
+  background-color: var(--color-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: var(--color-ink);
+  line-height: 1.1;
+}
+
+h1 {
+  font-size: var(--font-display-size-xl);
+  letter-spacing: -1.5px;
+}
+
+h2 {
+  font-size: var(--font-display-size-lg);
+  letter-spacing: -1px;
+}
+
+h3 {
+  font-size: var(--font-display-size-md);
+  letter-spacing: -0.5px;
+}
+
+h4 {
+  font-size: var(--font-display-size-sm);
+  letter-spacing: -0.3px;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-active);
+}
+
+button {
+  font-family: var(--font-body);
+  font-size: var(--font-button-size);
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+  transition: all var(--transition-fast);
+}
+
+input {
+  font-family: var(--font-body);
+  font-size: var(--font-body-size-md);
+  outline: none;
+  border: none;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted-soft);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
