@@ -31,10 +31,15 @@ export function useClipboard() {
     return copyToClipboard(fontFamily)
   }
 
+  function copyFontQuoted(fontName: string) {
+    return copyToClipboard(`'${fontName}'`)
+  }
+
   return {
     copied,
     copyToClipboard,
     copyFontName,
-    copyFontFamily
+    copyFontFamily,
+    copyFontQuoted
   }
 }

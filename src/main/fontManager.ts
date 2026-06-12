@@ -1,7 +1,16 @@
 import { join } from 'path'
-import { existsSync, mkdirSync, copyFileSync, unlinkSync, readdirSync, statSync } from 'fs'
+import {
+  existsSync,
+  mkdirSync,
+  copyFileSync,
+  unlinkSync,
+  readdirSync,
+  statSync,
+  readFileSync
+} from 'fs'
 import { promisify } from 'util'
 import { exec } from 'child_process'
+import opentype from 'opentype.js'
 
 const execAsync = promisify(exec)
 
@@ -23,26 +32,24 @@ function getUserFontsPath(): string {
 }
 
 function getLocalFontsPath(): string {
-  const localAppData = process.env.LOCALAPPDATA || join(process.env.USERPROFILE || '', 'AppData', 'Local')
+  const localAppData =
+    process.env.LOCALAPPDATA || join(process.env.USERPROFILE || '', 'AppData', 'Local')
   return join(localAppData, 'Microsoft', 'Windows', 'Fonts')
 }
 
 function isSystemFont(filePath: string): boolean {
-  const systemPaths = [
-    'C:\\Windows\\Fonts',
-    'C:\\Windows\\System32\\Fonts'
-  ]
-  return systemPaths.some(sysPath => filePath.startsWith(sysPath))
+  const systemPaths = ['C:\\Windows\\Fonts', 'C:\\Windows\\System32\\Fonts']
+  return systemPaths.some((sysPath) => filePath.startsWith(sysPath))
 }
 
 function getFontFormat(filePath: string): string {
   const ext = filePath.toLowerCase().split('.').pop() || ''
   const formatMap: Record<string, string> = {
-    'ttf': 'TrueType',
-    'otf': 'OpenType',
-    'woff': 'WOFF',
-    'woff2': 'WOFF2',
-    'ttc': 'TrueType Collection'
+    ttf: 'TrueType',
+    otf: 'OpenType',
+    woff: 'WOFF',
+    woff2: 'WOFF2',
+    ttc: 'TrueType Collection'
   }
   return formatMap[ext] || 'Unknown'
 }
@@ -50,6 +57,21 @@ function getFontFormat(filePath: string): string {
 function extractFontName(filePath: string): string {
   const fileName = filePath.split('\\').pop() || filePath.split('/').pop() || ''
   return fileName.replace(/\.[^/.]+$/, '')
+}
+
+function parseFontMetadata(filePath: string): { name: string; family: string } {
+  const fallbackName = extractFontName(filePath)
+  try {
+    const buffer = readFileSync(filePath)
+    const font = opentype.parse(buffer.buffer)
+    const names = font.names
+    const platformNames = names.windows || names.macintosh || {}
+    const name = platformNames.fontFamily?.en || platformNames.fontFamily?.zh || fallbackName
+    const family = platformNames.preferredFamily?.en || platformNames.preferredFamily?.zh || name
+    return { name, family }
+  } catch {
+    return { name: fallbackName, family: fallbackName }
+  }
 }
 
 export async function scanUserFonts(): Promise<FontInfo[]> {
@@ -69,10 +91,10 @@ export async function scanUserFonts(): Promise<FontInfo[]> {
           if (stat.isFile()) {
             const ext = '.' + file.split('.').pop()?.toLowerCase()
             if (FONT_EXTENSIONS.includes(ext) && !isSystemFont(filePath)) {
-              const name = extractFontName(filePath)
+              const metadata = parseFontMetadata(filePath)
               fonts.push({
-                name,
-                family: name,
+                name: metadata.name,
+                family: metadata.family,
                 filePath,
                 format: getFontFormat(filePath),
                 size: stat.size,
@@ -96,7 +118,9 @@ export async function scanUserFonts(): Promise<FontInfo[]> {
   return fonts
 }
 
-export async function installFont(sourcePath: string): Promise<{ success: boolean; message: string; font?: FontInfo }> {
+export async function installFont(
+  sourcePath: string
+): Promise<{ success: boolean; message: string; font?: FontInfo }> {
   try {
     if (!existsSync(sourcePath)) {
       return { success: false, message: '源字体文件不存在' }
@@ -117,14 +141,14 @@ export async function installFont(sourcePath: string): Promise<{ success: boolea
 
     copyFileSync(sourcePath, destPath)
 
-    const fontName = extractFontName(sourcePath)
-    const regCommand = `reg add "HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts" /v "${fontName} (TrueType)" /t REG_SZ /d "${destPath}" /f`
+    const metadata = parseFontMetadata(sourcePath)
+    const regCommand = `reg add "HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts" /v "${metadata.name} (TrueType)" /t REG_SZ /d "${destPath}" /f`
     await execAsync(regCommand)
 
     const stat = statSync(destPath)
     const fontInfo: FontInfo = {
-      name: fontName,
-      family: fontName,
+      name: metadata.name,
+      family: metadata.family,
       filePath: destPath,
       format: getFontFormat(sourcePath),
       size: stat.size,
@@ -138,7 +162,9 @@ export async function installFont(sourcePath: string): Promise<{ success: boolea
   }
 }
 
-export async function uninstallFont(font: FontInfo): Promise<{ success: boolean; message: string }> {
+export async function uninstallFont(
+  font: FontInfo
+): Promise<{ success: boolean; message: string }> {
   try {
     if (!existsSync(font.filePath)) {
       return { success: false, message: '字体文件不存在' }
@@ -164,11 +190,11 @@ export async function getFontDetails(filePath: string): Promise<FontInfo | null>
     if (!existsSync(filePath)) return null
 
     const stat = statSync(filePath)
-    const name = extractFontName(filePath)
+    const metadata = parseFontMetadata(filePath)
 
     return {
-      name,
-      family: name,
+      name: metadata.name,
+      family: metadata.family,
       filePath,
       format: getFontFormat(filePath),
       size: stat.size,

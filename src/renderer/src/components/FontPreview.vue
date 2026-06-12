@@ -53,7 +53,12 @@ function handleUninstall() {
       </div>
       <button class="close-btn" @click="emit('close')" title="关闭">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path
+            d="M4 4L12 12M12 4L4 12"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
         </svg>
       </button>
     </div>
@@ -65,11 +70,29 @@ function handleUninstall() {
           <span class="info-value">{{ font.name }}</span>
           <button class="copy-btn" @click="handleCopyName" :title="copied ? '已复制' : '复制名称'">
             <svg v-if="!copied" width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <rect x="4" y="4" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M10 4V3C10 2.44772 9.55228 2 9 2H3C2.44772 2 2 2.44772 2 3V9C2 9.55228 2.44772 10 3 10H4" stroke="currentColor" stroke-width="1.5"/>
+              <rect
+                x="4"
+                y="4"
+                width="8"
+                height="8"
+                rx="1"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+              <path
+                d="M10 4V3C10 2.44772 9.55228 2 9 2H3C2.44772 2 2 2.44772 2 3V9C2 9.55228 2.44772 10 3 10H4"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
             </svg>
             <svg v-else width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M3 7L6 10L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path
+                d="M3 7L6 10L11 4"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </button>
         </div>
@@ -78,8 +101,20 @@ function handleUninstall() {
           <span class="info-value">{{ font.family }}</span>
           <button class="copy-btn" @click="handleCopyFamily" title="复制字体族">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <rect x="4" y="4" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M10 4V3C10 2.44772 9.55228 2 9 2H3C2.44772 2 2 2.44772 2 3V9C2 9.55228 2.44772 10 3 10H4" stroke="currentColor" stroke-width="1.5"/>
+              <rect
+                x="4"
+                y="4"
+                width="8"
+                height="8"
+                rx="1"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
+              <path
+                d="M10 4V3C10 2.44772 9.55228 2 9 2H3C2.44772 2 2 2.44772 2 3V9C2 9.55228 2.44772 10 3 10H4"
+                stroke="currentColor"
+                stroke-width="1.5"
+              />
             </svg>
           </button>
         </div>
@@ -119,7 +154,7 @@ function handleUninstall() {
         <div
           class="preview-text"
           :style="{
-            fontFamily: font.family,
+            fontFamily: `'${font.family}'`,
             fontSize: currentSize + 'px'
           }"
         >
@@ -128,23 +163,25 @@ function handleUninstall() {
       </div>
 
       <div class="preview-actions">
-        <button
-          v-if="font.installed"
-          class="btn btn-secondary"
-          @click="handleUninstall"
-        >
+        <button v-if="font.installed" class="btn btn-secondary" @click="handleUninstall">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path
+              d="M4 4L12 12M12 4L4 12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
           </svg>
           卸载字体
         </button>
-        <button
-          v-else
-          class="btn btn-primary"
-          @click="handleInstall"
-        >
+        <button v-else class="btn btn-primary" @click="handleInstall">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path
+              d="M8 3V13M3 8H13"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
           </svg>
           安装字体
         </button>

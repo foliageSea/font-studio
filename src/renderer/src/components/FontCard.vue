@@ -15,7 +15,7 @@ const emit = defineEmits<{
   (e: 'uninstall', font: FontInfo): void
 }>()
 
-const { copied, copyFontName } = useClipboard()
+const { copied, copyFontQuoted } = useClipboard()
 
 const formattedSize = computed(() => {
   const bytes = props.font.size
@@ -30,9 +30,9 @@ const formattedDate = computed(() => {
   return date.toLocaleDateString('zh-CN')
 })
 
-function handleCopyName(e: Event) {
+function handleCopyQuoted(e: Event) {
   e.stopPropagation()
-  copyFontName(props.font.name)
+  copyFontQuoted(props.font.name)
 }
 
 function handleUninstall(e: Event) {
@@ -46,16 +46,9 @@ function handleSelect() {
 </script>
 
 <template>
-  <div
-    class="font-card"
-    :class="{ selected }"
-    @click="handleSelect"
-  >
+  <div class="font-card" :class="{ selected }" @click="handleSelect">
     <div class="font-card-preview">
-      <span
-        class="preview-text"
-        :style="{ fontFamily: font.family }"
-      >
+      <span class="preview-text" :style="{ fontFamily: `'${font.family}'` }">
         {{ previewText }}
       </span>
     </div>
@@ -74,15 +67,25 @@ function handleSelect() {
     <div class="font-card-actions">
       <button
         class="btn-icon small"
-        @click="handleCopyName"
-        :title="copied ? '已复制' : '复制字体名称'"
+        @click="handleCopyQuoted"
+        :title="copied ? '已复制' : '复制字体引用名称'"
       >
         <svg v-if="!copied" width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <rect x="4" y="4" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M10 4V3C10 2.44772 9.55228 2 9 2H3C2.44772 2 2 2.44772 2 3V9C2 9.55228 2.44772 10 3 10H4" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="4" y="4" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.5" />
+          <path
+            d="M10 4V3C10 2.44772 9.55228 2 9 2H3C2.44772 2 2 2.44772 2 3V9C2 9.55228 2.44772 10 3 10H4"
+            stroke="currentColor"
+            stroke-width="1.5"
+          />
         </svg>
         <svg v-else width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M3 7L6 10L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path
+            d="M3 7L6 10L11 4"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
       </button>
 
@@ -93,7 +96,12 @@ function handleSelect() {
         title="卸载字体"
       >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M3 3L11 11M11 3L3 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path
+            d="M3 3L11 11M11 3L3 11"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
         </svg>
       </button>
     </div>
