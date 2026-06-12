@@ -358,6 +358,7 @@ function handleUninstall() {
   background-color: var(--color-surface-soft);
   border-radius: var(--radius-md);
   padding: var(--spacing-lg);
+  overflow: auto;
 }
 
 .preview-text {
@@ -365,6 +366,7 @@ function handleUninstall() {
   text-align: center;
   word-break: break-word;
   line-height: 1.3;
+  max-width: 100%;
 }
 
 .preview-actions {
