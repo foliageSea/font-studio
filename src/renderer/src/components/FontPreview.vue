@@ -203,12 +203,12 @@ function handleUninstall() {
 <style scoped>
 .drawer-enter-active,
 .drawer-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .drawer-enter-active .font-preview,
 .drawer-leave-active .font-preview {
-  transition: transform 0.3s ease;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .drawer-enter-from,
