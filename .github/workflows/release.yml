@@ -27,6 +27,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+        env:
+          npm_config_ignore_scripts: "false"
 
       - name: Build Windows
         run: pnpm build:win
