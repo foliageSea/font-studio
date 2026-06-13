@@ -2,7 +2,14 @@ import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { scanUserFonts, installFont, uninstallFont, getFontDetails, FontInfo } from './fontManager'
+import {
+  scanUserFonts,
+  installFont,
+  uninstallFont,
+  uninstallFontFamily,
+  getFontDetails,
+  FontInfo
+} from './fontManager'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -78,6 +85,10 @@ app.whenReady().then(() => {
 
   ipcMain.handle('fonts:uninstall', async (_event, font: FontInfo) => {
     return await uninstallFont(font)
+  })
+
+  ipcMain.handle('fonts:uninstall-family', async (_event, familyName: string) => {
+    return await uninstallFontFamily(familyName)
   })
 
   ipcMain.handle('fonts:get-details', async (_event, filePath: string) => {

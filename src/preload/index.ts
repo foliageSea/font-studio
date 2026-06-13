@@ -10,6 +10,8 @@ const api = {
   scanFonts: () => ipcRenderer.invoke('fonts:scan'),
   installFont: (filePath: string) => ipcRenderer.invoke('fonts:install', filePath),
   uninstallFont: (font: any) => ipcRenderer.invoke('fonts:uninstall', font),
+  uninstallFontFamily: (familyName: string) =>
+    ipcRenderer.invoke('fonts:uninstall-family', familyName),
   getFontDetails: (filePath: string) => ipcRenderer.invoke('fonts:get-details', filePath),
   openFileDialog: () => ipcRenderer.invoke('fonts:open-file-dialog'),
   openFolderDialog: () => ipcRenderer.invoke('fonts:open-folder-dialog')

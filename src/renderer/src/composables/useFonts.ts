@@ -29,6 +29,9 @@ export function useFonts(): {
   scanFonts: () => Promise<void>
   installFont: (filePath: string) => Promise<{ success: boolean; message: string; font?: FontInfo }>
   uninstallFont: (font: FontInfo) => Promise<{ success: boolean; message: string }>
+  uninstallFontFamily: (
+    family: string
+  ) => Promise<{ success: boolean; message: string; uninstalled: number; failed: number }>
   importFonts: () => Promise<{ success: boolean; message: string; font?: FontInfo }[]>
   selectFont: (font: FontInfo | null) => void
   setSearchQuery: (query: string) => void
@@ -134,6 +137,28 @@ export function useFonts(): {
     }
   }
 
+  async function uninstallFontFamily(
+    family: string
+  ): Promise<{ success: boolean; message: string; uninstalled: number; failed: number }> {
+    loading.value = true
+    error.value = null
+    try {
+      const result = await window.api.uninstallFontFamily(family)
+      if (result.success || result.uninstalled > 0) {
+        fonts.value = fonts.value.filter((f) => f.family !== family)
+        if (selectedFont.value?.family === family) {
+          selectedFont.value = null
+        }
+      }
+      return result
+    } catch (err) {
+      error.value = `卸载字体族失败: ${err}`
+      return { success: false, message: `卸载失败: ${err}`, uninstalled: 0, failed: 0 }
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function importFonts(): Promise<{ success: boolean; message: string; font?: FontInfo }[]> {
     const result = await window.api.openFileDialog()
     if (result.canceled) return []
@@ -183,6 +208,7 @@ export function useFonts(): {
     scanFonts,
     installFont,
     uninstallFont,
+    uninstallFontFamily,
     importFonts,
     selectFont,
     setSearchQuery,

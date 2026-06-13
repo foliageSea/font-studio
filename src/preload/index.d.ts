@@ -21,6 +21,13 @@ export interface FontUninstallResult {
   message: string
 }
 
+export interface FontFamilyUninstallResult {
+  success: boolean
+  message: string
+  uninstalled: number
+  failed: number
+}
+
 export interface OpenFileDialogResult {
   canceled: boolean
   files: string[]
@@ -40,6 +47,7 @@ export interface Api {
   scanFonts: () => Promise<FontInfo[]>
   installFont: (filePath: string) => Promise<FontInstallResult>
   uninstallFont: (font: FontInfo) => Promise<FontUninstallResult>
+  uninstallFontFamily: (familyName: string) => Promise<FontFamilyUninstallResult>
   getFontDetails: (filePath: string) => Promise<FontInfo | null>
   openFileDialog: () => Promise<OpenFileDialogResult>
   openFolderDialog: () => Promise<OpenFolderDialogResult>

@@ -22,6 +22,7 @@ const {
   scanFonts,
   installFont,
   uninstallFont,
+  uninstallFontFamily,
   importFonts,
   selectFont,
   setFontFamily,
@@ -42,6 +43,15 @@ async function handleInstall(font: FontInfo): Promise<void> {
 
 async function handleUninstall(font: FontInfo): Promise<void> {
   await uninstallFont(font)
+}
+
+async function handleUninstallFamily(family: string): Promise<void> {
+  const familyFonts = filteredFonts.value.filter((f) => f.family === family)
+  const confirmed = window.confirm(
+    `确定要卸载字体族 "${family}" 的 ${familyFonts.length} 个字体吗？`
+  )
+  if (!confirmed) return
+  await uninstallFontFamily(family)
 }
 
 function handleClosePreview(): void {
@@ -70,6 +80,7 @@ async function handleImport(): Promise<void> {
             :stats="fontStats"
             :font-family-list="fontFamilyList"
             @update:font-family="setFontFamily"
+            @uninstall-family="handleUninstallFamily"
           />
           <button class="btn btn-primary" @click="handleImport">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

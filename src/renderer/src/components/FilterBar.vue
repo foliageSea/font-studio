@@ -15,6 +15,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:modelValue', value: FilterType): void
   (e: 'update:fontFamily', value: string): void
+  (e: 'uninstall-family', family: string): void
 }>()
 
 const selectedFamily = ref('')
@@ -48,6 +49,11 @@ function clearFamily(): void {
 
 function toggleDropdown(): void {
   showDropdown.value = !showDropdown.value
+}
+
+function handleUninstallFamily(e: Event, family: string): void {
+  e.stopPropagation()
+  emit('uninstall-family', family)
 }
 
 watch(
@@ -105,15 +111,30 @@ watch(
           <button class="dropdown-item" :class="{ active: !selectedFamily }" @click="clearFamily">
             全部字体族
           </button>
-          <button
+          <div
             v-for="family in fontFamilyList"
             :key="family"
-            class="dropdown-item"
+            class="dropdown-item-wrapper"
             :class="{ active: selectedFamily === family }"
-            @click="selectFamily(family)"
           >
-            {{ family }}
-          </button>
+            <button class="dropdown-item" @click="selectFamily(family)">
+              {{ family }}
+            </button>
+            <button
+              class="dropdown-item-uninstall"
+              title="卸载字体族"
+              @click="handleUninstallFamily($event, family)"
+            >
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M3 3L11 11M11 3L3 11"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -270,6 +291,7 @@ watch(
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
 }
 
 .dropdown-item:hover {
@@ -279,5 +301,49 @@ watch(
 .dropdown-item.active {
   background-color: var(--color-primary-light);
   color: var(--color-primary);
+}
+
+.dropdown-item-wrapper {
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+}
+
+.dropdown-item-wrapper:hover {
+  background-color: var(--color-surface-soft);
+}
+
+.dropdown-item-wrapper.active {
+  background-color: var(--color-primary-light);
+}
+
+.dropdown-item-wrapper.active .dropdown-item {
+  background-color: transparent;
+}
+
+.dropdown-item-uninstall {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-right: var(--spacing-xs);
+  color: var(--color-muted-soft);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  opacity: 0;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.dropdown-item-wrapper:hover .dropdown-item-uninstall {
+  opacity: 1;
+}
+
+.dropdown-item-uninstall:hover {
+  color: var(--color-error);
+  background-color: var(--color-surface-card);
 }
 </style>

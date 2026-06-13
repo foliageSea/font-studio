@@ -185,6 +185,39 @@ export async function uninstallFont(
   }
 }
 
+export async function uninstallFontFamily(
+  familyName: string
+): Promise<{ success: boolean; message: string; uninstalled: number; failed: number }> {
+  const fonts = await scanUserFonts()
+  const familyFonts = fonts.filter((f) => f.family === familyName)
+
+  if (familyFonts.length === 0) {
+    return { success: false, message: '未找到该字体族的字体', uninstalled: 0, failed: 0 }
+  }
+
+  let uninstalled = 0
+  let failed = 0
+
+  for (const font of familyFonts) {
+    const result = await uninstallFont(font)
+    if (result.success) {
+      uninstalled++
+    } else {
+      failed++
+    }
+  }
+
+  return {
+    success: failed === 0,
+    message:
+      failed === 0
+        ? `成功卸载 ${uninstalled} 个字体`
+        : `已卸载 ${uninstalled} 个字体，${failed} 个卸载失败`,
+    uninstalled,
+    failed
+  }
+}
+
 export async function getFontDetails(filePath: string): Promise<FontInfo | null> {
   try {
     if (!existsSync(filePath)) return null
