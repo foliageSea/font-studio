@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import type { FilterType } from '../types/font'
 
 const props = defineProps<{
@@ -20,6 +20,13 @@ const emit = defineEmits<{
 
 const selectedFamily = ref('')
 const showDropdown = ref(false)
+const dropdownRef = ref<HTMLElement | null>(null)
+
+function handleClickOutside(event: MouseEvent): void {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+    showDropdown.value = false
+  }
+}
 
 const filters: {
   value: FilterType
@@ -62,6 +69,14 @@ watch(
     selectedFamily.value = ''
   }
 )
+
+onMounted(() => {
+  document.addEventListener('mousedown', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mousedown', handleClickOutside)
+})
 </script>
 
 <template>
@@ -79,7 +94,7 @@ watch(
       </button>
     </div>
 
-    <div class="family-filter">
+    <div ref="dropdownRef" class="family-filter">
       <button class="family-btn" :class="{ active: selectedFamily }" @click="toggleDropdown">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
           <path
