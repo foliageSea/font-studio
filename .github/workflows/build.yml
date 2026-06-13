@@ -1,0 +1,87 @@
+name: Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }} ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows
+            os: windows-latest
+            arch: x64
+            build_command: pnpm build:win -- --x64
+            artifact_files: |
+              dist/*.exe
+          # - platform: macos
+          #   os: macos-14
+          #   arch: arm64
+          #   build_command: pnpm build:mac -- --arm64
+          #   artifact_files: |
+          #     dist/*.dmg
+          #     dist/*.zip
+          #     dist/*.blockmap
+          #     dist/latest-mac.yml
+          # - platform: linux
+          #   os: ubuntu-latest
+          #   arch: x64
+          #   build_command: pnpm build:linux
+          #   artifact_files: |
+          #     dist/*.AppImage
+          #     dist/*.deb
+          #     dist/*.rpm
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Read package version
+        id: package
+        shell: bash
+        run: |
+          version=$(node -p "require('./package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        run: ${{ matrix.build_command }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: font-studio-${{ steps.package.outputs.version }}-${{ matrix.platform }}-${{ matrix.arch }}
+          path: ${{ matrix.artifact_files }}
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload release assets
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: ${{ matrix.artifact_files }}
+          fail_on_unmatched_files: true
