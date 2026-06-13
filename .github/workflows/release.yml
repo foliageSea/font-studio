@@ -26,9 +26,7 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: |
-          pnpm approve-builds electron-winstaller electron esbuild
-          pnpm install
+        run: pnpm install
         env:
           npm_config_ignore_scripts: "false"
 
